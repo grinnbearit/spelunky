@@ -1,10 +1,15 @@
-(ns mises.data.core-test
+(ns spelunky.core-test
   (:use midje.sweet
         spelunky.test
-        spelunky.core))
+        spelunky.core
+        [spelunky.bytes :only [bytes->hex]]))
 
 
 (facts
- (decode-from-hex block-header (str "f9beb4d9" "00000000")) ; magic-number 0
- => {:magic-number 3652501241
-     :length 0})
+ (read-block (hex->stream (str "00000000 00000000")))
+ => (throws clojure.lang.ExceptionInfo)
+
+
+ (-> (read-block (hex->stream (str "f9beb4d9" "00000000")))
+     bytes->hex)
+ => "")

@@ -1,6 +1,7 @@
 (ns spelunky.test
   (:use [gloss.io :only [encode decode]]
-        [spelunky.bytes :only [bytes->hex hex->bytes]]))
+        [spelunky.bytes :only [bytes->hex hex->bytes]])
+  (:import [java.io ByteArrayInputStream]))
 
 
 (defn encode-to-hex
@@ -14,3 +15,8 @@
 (defn decode-from-hex
   [frame hex]
   (decode frame (hex->bytes hex)))
+
+
+(defn hex->stream
+  [hex]
+  (ByteArrayInputStream. (hex->bytes hex)))

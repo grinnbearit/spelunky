@@ -1,11 +1,12 @@
 (ns spelunky.core
-  (:use [gloss.core :only [defcodec
-                           header
-                           ordered-map
-                           compile-frame]]))
+  (:use [spelunky.bytes :only [read-bytes]]
+        [spelunky.codecs :only [block-header]]
+        [gloss.io :only [decode]]))
 
 
-(defcodec block-header
-  (ordered-map
-   :magic-number :uint32-le
-   :length :uint32-le))
+(defn read-block
+  [stream]
+  (let [{:keys [magic-number length]} (decode block-header (read-bytes stream 8))]
+    (if (not= magic-number 3652501241)
+      (throw (ex-info "Malformed Header" {}))
+      (read-bytes stream length))))
