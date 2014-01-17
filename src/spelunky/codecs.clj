@@ -1,4 +1,9 @@
 (ns spelunky.codecs
+  ^{:doc (str "References:"
+              "http://james.lab6.com/2012/01/12/bitcoin-285-bytes-that-changed-the-world/"
+              "https://en.bitcoin.it/wiki/Protocol_specification"
+              "http://2.bp.blogspot.com/-DaJcdsyqQSs/UsiTXNHP-0I/AAAAAAAATC0/kiFRowh-J18/s1600/blockchain.png"
+              "https://blockchain.info/block/000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f")}
   (:use [gloss.core :only [defcodec ordered-map compile-frame]]
         [spelunky.bytes :only [hex->ints ints->hex]]))
 
