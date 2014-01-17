@@ -13,6 +13,22 @@
 
 
 (facts
+ (decode-from-hex (hex-string-be (repeat 4 :ubyte)) "00000001")
+ => "00000001"
+
+ (encode-to-hex (hex-string-be (repeat 4 :ubyte)) "00000001")
+ => "00000001")
+
+
+(facts
+ (decode-from-hex (hex-string-le (repeat 4 :ubyte)) "01000000")
+ => "00000001"
+
+ (encode-to-hex (hex-string-le (repeat 4 :ubyte)) "01000000")
+ => "00000001")
+
+
+(facts
  (decode-from-hex block-header (str "f9beb4d9" "00000000")) ; magic-number 0
  => {:magic-number 3652501241
      :length 0})
@@ -26,7 +42,7 @@
                              "3a9fb8aa" "4b1e5e4a" "ffff001d" "1dac2b7c"))
  => {:version 1
      :timestamp #inst "2009-01-03T18:15:05"
-     :prev-block [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
-     :merkle-root [59 163 237 253 122 123 18 178 122 199 44 62 103 118 143 97 127 200 27 195 136 138 81 50 58 159 184 170 75 30 94 74]
+     :prev-block "0000000000000000000000000000000000000000000000000000000000000000"
+     :merkle-root "4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"
      :bits 486604799
      :nonce 2083236893})
