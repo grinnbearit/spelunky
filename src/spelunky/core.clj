@@ -1,6 +1,6 @@
 (ns spelunky.core
   (:use [spelunky.bytes :only [read-bytes]]
-        [spelunky.codecs :only [block-header]]
+        [spelunky.codecs :only [block-header block]]
         [gloss.io :only [decode]]))
 
 
@@ -9,4 +9,4 @@
   (let [{:keys [magic-number length]} (decode block-header (read-bytes stream 8))]
     (if (not= magic-number 3652501241)
       (throw (ex-info "Malformed Header" {}))
-      (read-bytes stream length))))
+      (decode block (read-bytes stream 80)))))
