@@ -29,6 +29,20 @@
 
 
 (facts
+ (decode-from-hex variable-length-integer "fc") => 252
+ (encode-to-hex variable-length-integer 252) => "fc"
+
+ (decode-from-hex variable-length-integer "fd0010") => 4096
+ (encode-to-hex variable-length-integer 4096) => "fd0010"
+
+ (decode-from-hex variable-length-integer "fe00000010") => 268435456
+ (encode-to-hex variable-length-integer 268435456) => "fe00000010"
+
+ (decode-from-hex variable-length-integer "ff0000000000000010") => 1152921504606846976N
+ (encode-to-hex variable-length-integer 1152921504606846976N) => "ff0000000000000010")
+
+
+(facts
  (decode-from-hex block-header (str "f9beb4d9" "00000000")) ; magic-number 0
  => {:magic-number 3652501241
      :length 0})
