@@ -9,4 +9,4 @@
   (let [{:keys [magic-number length]} (decode block-header (read-bytes stream 8))]
     (if (not= magic-number 3652501241)
       (throw (ex-info "Malformed Header" {}))
-      (decode block (read-bytes stream 80)))))
+      (decode block (read-bytes stream length)))))
