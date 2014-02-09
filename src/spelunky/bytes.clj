@@ -1,5 +1,8 @@
 (ns spelunky.bytes
-  (:use [clojure.string :only [lower-case]])
+  (:require [gloss.core.protocols :as p])
+  (:use [clojure.string :only [lower-case]]
+        [gloss.core :only [compile-frame]]
+        [gloss.data.bytes :only [take-contiguous-bytes byte-count]])
   (:import [java.nio ByteBuffer]))
 
 
@@ -77,3 +80,29 @@
 
 (def hex->bytes
   (comp ints->bytes hex->ints))
+
+
+(deftype BufferStore [frame]
+  p/Reader
+  (read-bytes [this buf-seq]
+    (if-let [size (p/sizeof frame)]
+      (let [store (take-contiguous-bytes buf-seq size)
+            [success x xs] (p/read-bytes frame buf-seq)]
+        [success [x store] xs])
+      (let [[success x xs] (p/read-bytes frame buf-seq)
+            store (take-contiguous-bytes buf-seq
+                                         (- (byte-count buf-seq)
+                                            (byte-count xs)))]
+        [success [x store] xs])))
+  p/Writer
+  (sizeof [this]
+    (p/sizeof frame))
+  (write-bytes [this buf val]
+    (p/write-bytes frame buf val)))
+
+
+(defn buffer-store
+  "On read, returns a vector of the decoded value and its byte buffer,
+expects only the decoded value on write"
+  [frame]
+  (BufferStore. (compile-frame frame)))
