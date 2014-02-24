@@ -3,7 +3,8 @@
   (:use [clojure.string :only [lower-case]]
         [gloss.core :only [compile-frame]]
         [gloss.data.bytes :only [take-contiguous-bytes byte-count]])
-  (:import [java.nio ByteBuffer]))
+  (:import [java.nio ByteBuffer]
+           [java.security MessageDigest]))
 
 
 (defn read-bytes
@@ -80,6 +81,27 @@
 
 (def hex->bytes
   (comp ints->bytes hex->ints))
+
+
+(defn sha256
+  [barray]
+  (let [digest (MessageDigest/getInstance "SHA-256")]
+    (.update digest barray)
+    (.digest digest)))
+
+
+(defn double-sha256
+  [barray]
+  (let [digest (MessageDigest/getInstance "SHA-256")]
+    (.update digest barray)
+    (.update digest (.digest digest))
+    (.digest digest)))
+
+
+(defn bitcoin-hash
+  "Returns the double-sha256 of the bytes as a little-endian hex-string"
+  [bytes]
+  (-> bytes double-sha256 bytes->ints reverse ints->hex))
 
 
 (deftype BufferStore [frame]

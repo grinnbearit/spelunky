@@ -60,3 +60,28 @@
 
    (encode-to-hex header-frame [0])
    => "0100"))
+
+
+(facts
+ (-> (hex->bytes "6465616462656566")
+     sha256
+     bytes->hex)
+ => "2baf1f40105d9501fe319a8ec463fdf4325a2a5df445adf3f572f626253678c9"
+
+ (-> (hex->bytes "2baf1f40105d9501fe319a8ec463fdf4325a2a5df445adf3f572f626253678c9")
+     sha256
+     bytes->hex)
+ => "e107944e77a688feae4c2d4db5951923812dd0f72026a11168104ee1b248f8a9")
+
+
+(facts
+ (-> (hex->bytes "6465616462656566")
+     double-sha256
+     bytes->hex)
+ => "e107944e77a688feae4c2d4db5951923812dd0f72026a11168104ee1b248f8a9")
+
+
+(facts
+ (-> (hex->bytes "6465616462656566")
+     bitcoin-hash)
+ => "a9f848b2e14e106811a12620f7d02d81231995b54d2d4caefe88a6774e9407e1")
