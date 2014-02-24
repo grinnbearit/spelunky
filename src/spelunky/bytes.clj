@@ -125,6 +125,12 @@
 
 (defn buffer-store
   "On read, returns a vector of the decoded value and its byte buffer,
-expects only the decoded value on write"
-  [frame]
-  (BufferStore. (compile-frame frame)))
+expects only the decoded value on write
+
+The post-decoder takes the byte buffer as a second argument"
+  ([frame]
+     (BufferStore. (compile-frame frame)))
+  ([frame pre-encoder post-decoder]
+     (compile-frame (buffer-store frame)
+                    pre-encoder
+                    (fn [[val buf]] (post-decoder val buf)))))
