@@ -1,8 +1,6 @@
 (ns spelunky.bytes
   (:require [gloss.core.protocols :as p])
-  (:use [clojure.string :only [lower-case]]
-        [gloss.core :only [compile-frame]]
-        [gloss.data.bytes :only [take-contiguous-bytes byte-count]])
+  (:use [clojure.string :only [lower-case]])
   (:import [java.nio ByteBuffer]
            [java.security MessageDigest]))
 
@@ -102,35 +100,3 @@
   "Returns the double-sha256 of the bytes as a little-endian hex-string"
   [bytes]
   (-> bytes double-sha256 bytes->ints reverse ints->hex))
-
-
-(deftype BufferStore [frame]
-  p/Reader
-  (read-bytes [this buf-seq]
-    (if-let [size (p/sizeof frame)]
-      (let [store (take-contiguous-bytes buf-seq size)
-            [success x xs] (p/read-bytes frame buf-seq)]
-        [success [x store] xs])
-      (let [[success x xs] (p/read-bytes frame buf-seq)
-            store (take-contiguous-bytes buf-seq
-                                         (- (byte-count buf-seq)
-                                            (byte-count xs)))]
-        [success [x store] xs])))
-  p/Writer
-  (sizeof [this]
-    (p/sizeof frame))
-  (write-bytes [this buf val]
-    (p/write-bytes frame buf val)))
-
-
-(defn buffer-store
-  "On read, returns a vector of the decoded value and its byte buffer,
-expects only the decoded value on write
-
-The post-decoder takes the byte buffer as a second argument"
-  ([frame]
-     (BufferStore. (compile-frame frame)))
-  ([frame pre-encoder post-decoder]
-     (compile-frame (buffer-store frame)
-                    pre-encoder
-                    (fn [[val buf]] (post-decoder val buf)))))
