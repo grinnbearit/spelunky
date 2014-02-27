@@ -62,5 +62,51 @@
 
 (facts
  (-> (hex->bytes "6465616462656566")
+     ripemd160
+     bytes->hex)
+ => "0c08020a7343ef0868a8b1874ba36d1b646e62e7")
+
+
+(facts
+ (-> (hex->bytes "6465616462656566")
      bitcoin-hash)
  => "a9f848b2e14e106811a12620f7d02d81231995b54d2d4caefe88a6774e9407e1")
+
+
+(facts
+ (-> (hex->bytes "6465616462656566")
+     base58-encode)
+ => "Hny6RY5JvhT"
+
+
+ (-> (hex->bytes "0001")
+     base58-encode)
+ => "12")
+
+
+(facts
+ (-> (base58-decode "Hny6RY5JvhT")
+     bytes->hex)
+ => "6465616462656566"
+
+
+ (-> (base58-decode "12")
+     bytes->hex)
+ => "0001")
+
+
+(facts
+ (pubkey-hash->address (hex->bytes "6465616462656566"))
+ => "12ttJFtXekxnC9RMBi")
+
+
+(facts
+ (-> (address->pubkey-hash "12ttJFtXekxnC9RMBi")
+     bytes->hex)
+ => "6465616462656566")
+
+
+(facts
+ (-> (hex->bytes "6465616462656566")
+     pubkey->address)
+ => "1FUfmBUhCM6Yeh4qZ3noes54CDLngiJHS8")

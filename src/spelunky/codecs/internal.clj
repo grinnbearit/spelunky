@@ -2,7 +2,8 @@
   (:use [gloss.core :only [defcodec compile-frame header nil-frame]]
         [gloss.core.protocols :only [Reader Writer read-bytes write-bytes sizeof]]
         [gloss.data.bytes :only [take-contiguous-bytes byte-count]]
-        [spelunky.bytes :only [hex->ints ints->hex]]))
+        [spelunky.bytes :only [hex->ints ints->hex]]
+        [spelunky.codecs.script :only [encode-script decode-script]]))
 
 
 (def timestamp
@@ -69,3 +70,8 @@ The post-decoder takes the byte buffer as a second argument"
      (compile-frame (buffer-store frame)
                     pre-encoder
                     (fn [[val buf]] (post-decoder val buf)))))
+
+
+(defn script
+  [frame]
+  (compile-frame frame encode-script decode-script))

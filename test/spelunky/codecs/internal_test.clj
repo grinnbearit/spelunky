@@ -62,3 +62,9 @@
 
    (encode-to-hex header-frame [0])
    => "0100"))
+
+
+(facts
+ (let [codec (script (repeat 4 :ubyte))]
+   (decode-from-hex codec "4d010001")        => [:pushdata2 "01"]
+   (encode-to-hex   codec [:pushdata2 "01"]) => "4d010001"))

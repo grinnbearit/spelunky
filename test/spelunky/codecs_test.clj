@@ -13,35 +13,35 @@
 (facts
  (decode-from-hex input (str "00000000" "00000000" "00000000" "00000000"
                              "00000000" "00000000" "00000000" "00000000"
-                             "00000000" "0100ffff" "ffff"))
+                             "00000000" "020100ff" "ffffff"))
  => {:hash (str "00000000" "00000000" "00000000" "00000000"
                 "00000000" "00000000" "00000000" "00000000")
      :index 0
-     :script [0]
+     :script [:pushdata "00"]
      :sequence 0xffffffff})
 
 
 (facts
- (decode-from-hex output (str "00f2052a" "01000000" "0100"))
+ (decode-from-hex output (str "00f2052a" "01000000" "020100"))
  => {:value 5000000000
-     :script [0]})
+     :script [:pushdata "00"]})
 
 
 (facts
  (decode-from-hex txn (str "01000000" "01000000" "00000000" "00000000"
                            "00000000" "00000000" "00000000" "00000000"
-                           "00000000" "00000000" "000100ff" "ffffff01"
-                           "00f2052a" "01000000" "01000000" "0000"))
+                           "00000000" "00000000" "00020100" "ffffffff"
+                           "0100f205" "2a010000" "00020100" "00000000"))
  => {:version 1
-     :hash (str "025a4670" "bbeca790" "fb98cf21" "67284f3b"
-                "e3f21710" "86622110" "9d035b0d" "aff86db1")
+     :hash (str "4a2a4c62" "cfdd6ca7" "ce94ab50" "1f68faff"
+                "132fbf6d" "f234ff21" "18fb48f0" "cd9c9b22")
      :inputs [{:hash (str "00000000" "00000000" "00000000" "00000000"
                           "00000000" "00000000" "00000000" "00000000")
                :index 0
-               :script [0]
+               :script [:pushdata "00"]
                :sequence 0xffffffff}]
      :outputs [{:value 5000000000
-                :script [0]}]
+                :script [:pushdata "00"]}]
      :lock-time 0})
 
 
@@ -71,8 +71,9 @@
                              "3a9fb8aa" "4b1e5e4a" "ffff001d" "1dac2b7c"
                              "01010000" "00010000" "00000000" "00000000"
                              "00000000" "00000000" "00000000" "00000000"
-                             "00000000" "00000000" "00000100" "ffffffff"
-                             "0100f205" "2a010000" "00010000" "000000"))
+                             "00000000" "00000000" "00000201" "00ffffff"
+                             "ff0100f2" "052a0100" "00000201" "00000000"
+                             "00"))
  => {:version 1
      :timestamp #inst "2009-01-03T18:15:05"
      :hash (str "62372506" "3df4c184" "efd73b08" "03db6418"
@@ -84,13 +85,13 @@
      :bits 486604799
      :nonce 2083236893
      :txns [{:version 1
-             :hash (str "025a4670" "bbeca790" "fb98cf21" "67284f3b"
-                        "e3f21710" "86622110" "9d035b0d" "aff86db1")
+             :hash (str "4a2a4c62" "cfdd6ca7" "ce94ab50" "1f68faff"
+                        "132fbf6d" "f234ff21" "18fb48f0" "cd9c9b22")
              :inputs [{:hash (str "00000000" "00000000" "00000000" "00000000"
                                   "00000000" "00000000" "00000000" "00000000")
                        :index 0
-                       :script [0]
+                       :script [:pushdata "00"]
                        :sequence 0xffffffff}]
              :outputs [{:value 5000000000
-                        :script [0]}]
+                        :script [:pushdata "00"]}]
              :lock-time 0}]})

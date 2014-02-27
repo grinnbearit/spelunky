@@ -1,8 +1,13 @@
 (ns spelunky.bytes
   (:require [gloss.core.protocols :as p])
   (:use [clojure.string :only [lower-case]])
-  (:import [java.nio ByteBuffer]
-           [java.security MessageDigest]))
+  (:import [org.bouncycastle.jce.provider BouncyCastleProvider]
+           [java.nio ByteBuffer]
+           [java.security MessageDigest Security]))
+
+
+;;; install bouncy castle provider
+(Security/addProvider (BouncyCastleProvider.))
 
 
 (defn read-bytes
@@ -96,7 +101,65 @@
     (.digest digest)))
 
 
+(defn ripemd160
+  [barray]
+  (let [digest (MessageDigest/getInstance "RIPEMD160", "BC")]
+    (.update digest barray)
+    (.digest digest)))
+
+
 (defn bitcoin-hash
   "Returns the double-sha256 of the bytes as a little-endian hex-string"
   [bytes]
   (-> bytes double-sha256 bytes->ints reverse ints->hex))
+
+
+(let [chars (vec "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz")]
+  (defn base58-encode
+    [bytes]
+    (let [zero-count (count (take-while #{0} bytes))]
+      (loop [n (bigint (byte-array bytes)) base58 ()]
+        (if (zero? n)
+          (apply str (concat (repeat zero-count \1) base58))
+          (recur (quot n 58) (conj base58 (chars (rem n 58))))))))
+
+
+  (let [ints (zipmap chars (range))]
+    (defn- revert-base
+      [string]
+      (first
+       (reduce (fn [[acc pow] x]
+                 [(+ acc (* pow x)) (* pow 58)])
+               [(bigint 0) (bigint 1)]
+               (reverse (map ints string))))))
+
+
+  (defn base58-decode
+    [string]
+    (let [zero-count (count (take-while #{\1} string))]
+      (->> (revert-base (drop-while #{\1} string))
+           biginteger
+           .toByteArray
+           (concat (repeat zero-count (byte 0)))
+           byte-array))))
+
+
+(defn pubkey-hash->address
+  [bytes]
+  (let [versioned (conj (seq bytes) (byte 0))
+        hash (double-sha256 (byte-array versioned))]
+    (base58-encode (byte-array (concat versioned (take 4 hash))))))
+
+
+(defn address->pubkey-hash
+  [address]
+  (let [decoded (base58-decode address)]
+    (->> decoded
+         (take (- (count decoded) 4))
+         (drop 1)
+         byte-array)))
+
+
+(defn pubkey->address
+  [bytes]
+  (pubkey-hash->address (ripemd160 (sha256 bytes))))
